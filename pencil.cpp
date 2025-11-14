@@ -25,6 +25,8 @@ struct Task
     string text;
 };
 
+//this counts every time you finish a task and after 10 you get a waffle party lol
+int finishedCount = 0; 
 string getTodoFilePath()
 {
     const char *home = getenv("HOME"); // gets the home dir.
@@ -147,7 +149,19 @@ void cmd_finish(int argc, char *argv[])
     tasks.erase(tasks.begin() + (num -1));
     saveTasks(tasks);
 
+    ++finishedCount;
+
     cout << "Deleted task " << num << ". " << removedText << endl;
+
+    if (finishedCount < 10){
+        cout << 10 - finishedCount << " tasks left to get something fun..." << endl;
+    }else
+    {
+        //WAFFLE PARTY
+        cout << "WAFFLE PARTY WOOHOO! YOU ROCK!" << endl;
+        finishedCount = 0; //reseting the count lol
+    }
+
 }
 
 
