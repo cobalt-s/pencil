@@ -10,6 +10,7 @@ Author: Cobalt Stamey
 */
 
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@ struct Task
 
 // this counts every time you finish a task and after 10 you get a waffle party lol
 int finishedCount = 0;
+
 string getTodoFilePath()
 {
     const char *home = getenv("HOME"); // gets the home dir.
@@ -79,6 +81,41 @@ void saveTasks(const vector<Task> &tasks)
     {
         out << (t.done ? '1' : '0') << "|" << t.text << endl;
     }
+}
+
+// this gets the counter file path so its saved between runs
+string getCounterFilePath()
+{
+    const char *home = getenv("HOME");
+    if (!home)
+    {
+        return string(".pencil_count");
+    }
+    return string(home) + "/.pencil_count";
+}
+
+//this loads the finished count. 
+int loadFinishedCount()
+{
+    ifstream in(getCounterFilePath());
+    if (!in)
+        return 0;
+    int cnt = 0;
+    in >> cnt;
+    if (!in)
+        return 0;
+    return cnt;
+}
+
+void saveFinishedCount(int cnt)
+{
+    ofstream out(getCounterFilePath());
+    if (!out)
+    {
+        cerr << "Warning: cannot write to counter file." << endl;
+        return;
+    }
+    out << cnt << endl;
 }
 
 void cmd_list()
@@ -153,6 +190,7 @@ void cmd_finish(int argc, char *argv[])
     saveTasks(tasks);
 
     ++finishedCount;
+    saveFinishedCount(finishedCount);
 
     cout << "Deleted task " << num << ". " << removedText << endl;
 
@@ -165,6 +203,7 @@ void cmd_finish(int argc, char *argv[])
         // WAFFLE PARTY
         cout << "WAFFLE PARTY WOOHOO! YOU ROCK!" << endl;
         finishedCount = 0; // reseting the count lol
+        saveFinishedCount(finishedCount);
     }
 }
 
@@ -180,6 +219,9 @@ void print_help()
 
 int main(int argc, char *argv[])
 {
+    // load persisted counter at startup
+    finishedCount = loadFinishedCount();
+
     if (argc < 2)
     {
         print_help();
@@ -221,6 +263,7 @@ int main(int argc, char *argv[])
             cout << "Don't mess up next time." << endl;
 
             finishedCount -= 1;
+            saveFinishedCount(finishedCount);
         }
         return 1;
     }
