@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
         cout << "UNKNOWN COMMAND FIX IT: " << cmd << endl;
         print_help();
 
-        if (finishedCount = 0)
+        if (finishedCount == 0)
         {
             cout << "you lucked out... no waffle party tokens to lose next time.....WATCH OUT!" << endl;
         }
