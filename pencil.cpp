@@ -206,6 +206,17 @@ int main(int argc, char *argv[])
     {
         cout << "UNKNOWN COMMAND FIX IT: " << cmd << endl;
         print_help();
+
+        if(finishedCount = 0){
+            cout << "you lucked out... no waffle party tokens to lose next time.....WATCH OUT!" << endl;
+        }else{
+            cout << "You have lost one waffle party token. " << endl;
+            cout << "Current: " << finishedCount << " tokens" << endl;
+            cout << "New: " << finishedCount - 1 << " tokens" << endl;
+            cout << "Don't mess up next time." << endl;
+
+            finishedCount -= 1;
+        }
         return 1;
     }
 
