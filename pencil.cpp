@@ -25,8 +25,8 @@ struct Task
     string text;
 };
 
-//this counts every time you finish a task and after 10 you get a waffle party lol
-int finishedCount = 0; 
+// this counts every time you finish a task and after 10 you get a waffle party lol
+int finishedCount = 0;
 string getTodoFilePath()
 {
     const char *home = getenv("HOME"); // gets the home dir.
@@ -90,6 +90,9 @@ void cmd_list()
         return;
     }
 
+    cout << "These are your tasks: " << endl;
+    cout << "Complete them for a waffle token... :)" << endl;
+
     int taskNumber = 1;
     for (const auto &t : tasks)
     {
@@ -146,25 +149,24 @@ void cmd_finish(int argc, char *argv[])
     }
 
     string removedText = tasks[num - 1].text;
-    tasks.erase(tasks.begin() + (num -1));
+    tasks.erase(tasks.begin() + (num - 1));
     saveTasks(tasks);
 
     ++finishedCount;
 
     cout << "Deleted task " << num << ". " << removedText << endl;
 
-    if (finishedCount < 10){
-        cout << 10 - finishedCount << " tasks left to get something fun..." << endl;
-    }else
+    if (finishedCount < 10)
     {
-        //WAFFLE PARTY
-        cout << "WAFFLE PARTY WOOHOO! YOU ROCK!" << endl;
-        finishedCount = 0; //reseting the count lol
+        cout << 10 - finishedCount << " tasks left to get something fun..." << endl;
     }
-
+    else
+    {
+        // WAFFLE PARTY
+        cout << "WAFFLE PARTY WOOHOO! YOU ROCK!" << endl;
+        finishedCount = 0; // reseting the count lol
+    }
 }
-
-
 
 void print_help()
 {
@@ -207,9 +209,12 @@ int main(int argc, char *argv[])
         cout << "UNKNOWN COMMAND FIX IT: " << cmd << endl;
         print_help();
 
-        if(finishedCount = 0){
+        if (finishedCount = 0)
+        {
             cout << "you lucked out... no waffle party tokens to lose next time.....WATCH OUT!" << endl;
-        }else{
+        }
+        else
+        {
             cout << "You have lost one waffle party token. " << endl;
             cout << "Current: " << finishedCount << " tokens" << endl;
             cout << "New: " << finishedCount - 1 << " tokens" << endl;
