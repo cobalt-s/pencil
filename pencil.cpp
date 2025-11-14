@@ -1,14 +1,13 @@
 /*
-This is Pencil, this is my own personal to-do list. 
+This is Pencil, this is my own personal to-do list.
 
 I aim for this in the future to recognize keywords in the text and
-auto put things like time and date. 
+auto put things like time and date.
 
-Its just very simple right now. 
+Its just very simple right now.
 
 Author: Cobalt Stamey
 */
-
 
 #include <iostream>
 #include <fstream>
@@ -30,7 +29,10 @@ string getTodoFilePath()
 {
     const char *home = getenv("HOME"); // gets the home dir.
 
-    if (!home){ return string(TODO_FILE); }
+    if (!home)
+    {
+        return string(TODO_FILE);
+    }
 
     return string(home) + "/" + TODO_FILE; // returns the home dir.
 }
@@ -42,11 +44,11 @@ vector<Task> loadTasks()
     ifstream in(getTodoFilePath());
     if (!in)
     {
-        //no tasks or file. 
+        // no tasks or file.
         return tasks;
     }
 
-    //otherwise we move on to the tasks in the file.
+    // otherwise we move on to the tasks in the file.
     string line;
 
     while (getline(in, line))
@@ -56,9 +58,9 @@ vector<Task> loadTasks()
         {
             continue;
         }
-        bool done = (line[0] == '1'); //task is done. 
+        bool done = (line[0] == '1'); // task is done.
         string text = line.substr(2);
-        tasks.push_back({done, text}); //adds the task is done level to vector.
+        tasks.push_back({done, text}); // adds the task is done level to vector.
     }
     return tasks;
 }
@@ -66,12 +68,12 @@ vector<Task> loadTasks()
 void saveTasks(const vector<Task> &tasks)
 {
     ofstream out(getTodoFilePath());
-    if(!out)
+    if (!out)
     {
         cerr << "Error: cannot write to todo file." << endl;
     }
 
-    for(const auto &t : tasks)
+    for (const auto &t : tasks)
     {
         out << (t.done ? '1' : '0') << "|" << t.text << endl;
     }
@@ -86,11 +88,11 @@ void cmd_list()
         return;
     }
 
-    int taskNumber = 1; 
+    int taskNumber = 1;
     for (const auto &t : tasks)
     {
         cout << taskNumber << ". " << "[" << (t.done ? 'x' : ' ') << "] " << t.text << endl;
-        ++taskNumber;  
+        ++taskNumber;
     }
 }
 
@@ -127,7 +129,7 @@ void cmd_done(int argc, char *argv[])
 
     int num = atoi(argv[2]);
 
-    if(num <= 0)
+    if (num <= 0)
     {
         cout << "Invalid task number" << endl;
         return;
@@ -135,17 +137,20 @@ void cmd_done(int argc, char *argv[])
 
     auto tasks = loadTasks();
 
-    if(num > static_cast<int>(tasks.size()))
+    if (num > static_cast<int>(tasks.size()))
     {
         cout << "Task " << num << " doesn't exist." << endl;
         return;
     }
 
-    tasks[num -1].done = true;
+    string removedText = tasks[num - 1].text;
+    tasks.erase(tasks.begin() + (num -1));
     saveTasks(tasks);
 
-    cout << "Marked task " << num << "as done" << endl;
+    cout << "Deleted task " << num << ". " << removedText << endl;
 }
+
+
 
 void print_help()
 {
@@ -154,7 +159,7 @@ void print_help()
     cout << "Usage:" << endl;
     cout << " pencil list" << endl;
     cout << " pencil add <task text>" << endl;
-    cout << " pencil done <task-number>" << endl; 
+    cout << " pencil done <task-number>" << endl;
 }
 
 int main(int argc, char *argv[])
