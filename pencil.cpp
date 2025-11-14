@@ -119,7 +119,7 @@ void cmd_add(int argc, char *argv[])
     cout << "Added your task: " << text << endl;
 }
 
-void cmd_done(int argc, char *argv[])
+void cmd_finish(int argc, char *argv[])
 {
     if (argc < 3)
     {
@@ -159,7 +159,7 @@ void print_help()
     cout << "Usage:" << endl;
     cout << " pencil list" << endl;
     cout << " pencil add <task text>" << endl;
-    cout << " pencil done <task-number>" << endl;
+    cout << " pencil finish <task-number>" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -180,9 +180,9 @@ int main(int argc, char *argv[])
     {
         cmd_add(argc, argv);
     }
-    else if (cmd == "done")
+    else if (cmd == "finish")
     {
-        cmd_done(argc, argv);
+        cmd_finish(argc, argv);
     }
     else if (cmd == "help")
     {
