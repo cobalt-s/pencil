@@ -7,14 +7,13 @@ auto put things like time and date.
 Its just very simple right now.
 
 Author: Cobalt Stamey
+Email: stameycobalt@gmail.com
 */
 
 #include <iostream>
-#include <cstdlib>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstdlib>
 
 #define TODO_FILE ".pencil" // this is the default file name for the todo storage.
 
@@ -29,18 +28,29 @@ struct Task
 // this counts every time you finish a task and after 10 you get a waffle party lol
 int finishedCount = 0;
 
+
+/**
+ * This function finds the home directory and gets the todo file path.
+ *
+ * @return the Todo file path from the home directory.
+ */
 string getTodoFilePath()
 {
     const char *home = getenv("HOME"); // gets the home dir.
 
     if (!home)
     {
-        return string(TODO_FILE);
+        return {TODO_FILE};
     }
 
     return string(home) + "/" + TODO_FILE; // returns the home dir.
 }
 
+/**
+ * Loads the tasks from the ToDo
+ *
+ * @return a list of the tasks in the todo.
+ */
 vector<Task> loadTasks()
 {
     vector<Task> tasks;
@@ -69,6 +79,10 @@ vector<Task> loadTasks()
     return tasks;
 }
 
+/**
+ * Saves the tasks to the todo file path.
+ * @param tasks a vector of the tasks that were loaded.
+ */
 void saveTasks(const vector<Task> &tasks)
 {
     ofstream out(getTodoFilePath());
@@ -84,6 +98,12 @@ void saveTasks(const vector<Task> &tasks)
 }
 
 // this gets the counter file path so its saved between runs
+/**
+ * This gets the file path for the file that saves
+ * the count of tokens.
+ *
+ * @return the counter of tokens save file.
+ */
 string getCounterFilePath()
 {
     const char *home = getenv("HOME");
@@ -94,7 +114,11 @@ string getCounterFilePath()
     return string(home) + "/.pencil_count";
 }
 
-//this loads the finished count. 
+/**
+ * Loads the amount of tasks completed.
+ *
+ * @return the count of tasks completed.
+ */
 int loadFinishedCount()
 {
     ifstream in(getCounterFilePath());
@@ -107,6 +131,11 @@ int loadFinishedCount()
     return cnt;
 }
 
+/**
+ * Saves the amount of tasks completed to the counter file path.
+ *
+ * @param cnt the amount of tasks completed.
+ */
 void saveFinishedCount(int cnt)
 {
     ofstream out(getCounterFilePath());
@@ -118,6 +147,9 @@ void saveFinishedCount(int cnt)
     out << cnt << endl;
 }
 
+/**
+ * Displays the list of tasks.
+ */
 void cmd_list()
 {
     auto tasks = loadTasks();
@@ -138,6 +170,12 @@ void cmd_list()
     }
 }
 
+/**
+ * The add command, adds a task to the list of tasks.
+ *
+ * @param argc The amount of arguments
+ * @param argv The data of the arguments.
+ */
 void cmd_add(int argc, char *argv[])
 {
     if (argc < 3)
@@ -161,6 +199,12 @@ void cmd_add(int argc, char *argv[])
     cout << "Added your task: " << text << endl;
 }
 
+/**
+ * Finishes a task in the list of tasks.
+ *
+ * @param argc
+ * @param argv
+ */
 void cmd_finish(int argc, char *argv[])
 {
     if (argc < 3)
@@ -169,7 +213,7 @@ void cmd_finish(int argc, char *argv[])
         return;
     }
 
-    int num = atoi(argv[2]);
+    int num = stoi(argv[2]);
 
     if (num <= 0)
     {
@@ -200,16 +244,15 @@ void cmd_finish(int argc, char *argv[])
     }
     else
     {
-        // WAFFLE PARTY
         cout << "WAFFLE PARTY WOOHOO! YOU ROCK!" << endl;
-        finishedCount = 0; // reseting the count lol
+        finishedCount = 0;
         saveFinishedCount(finishedCount);
     }
 }
 
 void print_help()
 {
-    cout << "Welcome to pencil, my cli todo list!" << endl;
+    cout << "Welcome to pencil, the ultimate CLI todolist!" << endl;
     cout << "====================================" << endl;
     cout << "Usage:" << endl;
     cout << " pencil list" << endl;
