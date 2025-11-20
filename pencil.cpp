@@ -202,23 +202,43 @@ void cmd_add(int argc, char *argv[])
 {
     if (argc < 3)
     {
-        cout << "Usage: pencil add <task text>" << endl;
+        cout << "Usage: pencil add [YYYY-MM-DD] <task text>" << endl;
         return;
     }
 
-    string text = argv[2];
+    string possibleDate = argv[2];
+    string due_date;
+    string text;
 
-    for (int i = 3; i < argc; ++i)
+
+    bool looksLikeDate = possibleDate.size() == 10 && possibleDate[4] == '-' && possibleDate[7] == '-';
+    int startIndex;
+
+    if (looksLikeDate) {
+        due_date = possibleDate;
+        startIndex = 3;
+    }else {
+        due_date = timeAndDay();
+        startIndex = 2;
+    }
+
+    text = argv[startIndex];
+    for (int i = startIndex + 1; i < argc; ++i)
     {
         text += " ";
         text += argv[i];
     }
 
     auto tasks = loadTasks();
+
+    Task t;
+    t.text = text;
+    t.due_date = due_date;
+
     tasks.push_back({text});
     saveTasks(tasks);
 
-    cout << "Added your task: " << text << endl;
+    cout << "Added: " << text << " (due " << due_date << ")" << endl;
 }
 
 /**
