@@ -19,6 +19,9 @@ Email: stameycobalt@gmail.com
 #include <fstream>
 #include <string>
 #include <vector>
+#include<chrono>
+#include<ctime>
+
 
 #define TODO_FILE ".pencil" // this is the default file name for the todo storage.
 
@@ -26,6 +29,27 @@ using namespace std;
 
 // this counts every time you finish a task and after 10 you get a waffle party lol
 int finishedCount = 0;
+
+/**
+ * This gets the time and day on linux/macos I'm not sure it will work on windows...
+ * @return the current time and day
+ */
+string timeAndDay() {
+    using namespace std::chrono;
+
+    auto now = system_clock::now();
+    time_t t = system_clock::to_time_t(now);
+
+    //converting to calendar
+    tm local{};
+    localtime_r(&t, &local);
+
+    char buf[11];
+    strftime(buf, sizeof(buf), "%y-%m-%d", &local);
+
+    return string(buf);
+}
+
 
 /**
  * This function finds the home directory and gets the todo file path.
