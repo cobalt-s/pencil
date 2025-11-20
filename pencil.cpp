@@ -4,12 +4,17 @@ This is Pencil, this is my own personal to-do list.
 I aim for this in the future to recognize keywords in the text and
 auto put things like time and date.
 
+To update this:
+cmake --build cmake-build-debug --target pencil_install
+
+
 Its just very simple right now.
 
 Author: Cobalt Stamey
 Email: stameycobalt@gmail.com
 */
 
+#include "pencil.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -19,15 +24,8 @@ Email: stameycobalt@gmail.com
 
 using namespace std;
 
-struct Task
-{
-    bool done;
-    string text;
-};
-
 // this counts every time you finish a task and after 10 you get a waffle party lol
 int finishedCount = 0;
-
 
 /**
  * This function finds the home directory and gets the todo file path.
@@ -58,24 +56,21 @@ vector<Task> loadTasks()
     ifstream in(getTodoFilePath());
     if (!in)
     {
-        // no tasks or file.
         return tasks;
     }
 
-    // otherwise we move on to the tasks in the file.
     string line;
-
     while (getline(in, line))
     {
-        // check line length
-        if (line.size() < 3)
-        {
+        if (line.empty()) {
             continue;
         }
-        bool done = (line[0] == '1'); // task is done.
-        string text = line.substr(2);
-        tasks.push_back({done, text}); // adds the task is done level to vector.
+
+        Task t;
+        t.text = line;
+        tasks.push_back(t);
     }
+
     return tasks;
 }
 
@@ -93,11 +88,11 @@ void saveTasks(const vector<Task> &tasks)
 
     for (const auto &t : tasks)
     {
-        out << (t.done ? '1' : '0') << "|" << t.text << endl;
+        out << t.text << "|" << t.due_date <<  endl;
     }
 }
 
-// this gets the counter file path so its saved between runs
+// this gets the counter file path so it's saved between runs
 /**
  * This gets the file path for the file that saves
  * the count of tokens.
@@ -159,13 +154,12 @@ void cmd_list()
         return;
     }
 
-    cout << "These are your tasks: " << endl;
-    cout << "Complete them for a waffle token... :)" << endl;
+    cout << "Tasks for Today: " << endl;
 
     int taskNumber = 1;
     for (const auto &t : tasks)
     {
-        cout << taskNumber << ". " << "[" << (t.done ? 'x' : ' ') << "] " << t.text << endl;
+        cout << taskNumber << ". "  << t.text << " " << t.due_date << endl;
         ++taskNumber;
     }
 }
@@ -193,7 +187,7 @@ void cmd_add(int argc, char *argv[])
     }
 
     auto tasks = loadTasks();
-    tasks.push_back({false, text});
+    tasks.push_back({text});
     saveTasks(tasks);
 
     cout << "Added your task: " << text << endl;
@@ -209,7 +203,7 @@ void cmd_finish(int argc, char *argv[])
 {
     if (argc < 3)
     {
-        cout << "Usage: pencil done <task-number>" << endl;
+        cout << "Usage: pencil finish <task-number>" << endl;
         return;
     }
 
@@ -250,9 +244,14 @@ void cmd_finish(int argc, char *argv[])
     }
 }
 
+/**
+ * Prints the help screen.
+ */
 void print_help()
 {
+    //@todo add a feature where it says hi to the user
     cout << "Welcome to pencil, the ultimate CLI todolist!" << endl;
+    cout << "Update 0.001" << endl;
     cout << "====================================" << endl;
     cout << "Usage:" << endl;
     cout << " pencil list" << endl;
@@ -260,56 +259,3 @@ void print_help()
     cout << " pencil finish <task-number>" << endl;
 }
 
-int main(int argc, char *argv[])
-{
-    // load persisted counter at startup
-    finishedCount = loadFinishedCount();
-
-    if (argc < 2)
-    {
-        print_help();
-        return 0;
-    }
-
-    string cmd = argv[1];
-
-    if (cmd == "list")
-    {
-        cmd_list();
-    }
-    else if (cmd == "add")
-    {
-        cmd_add(argc, argv);
-    }
-    else if (cmd == "finish")
-    {
-        cmd_finish(argc, argv);
-    }
-    else if (cmd == "help")
-    {
-        print_help();
-    }
-    else
-    {
-        cout << "UNKNOWN COMMAND FIX IT: " << cmd << endl;
-        print_help();
-
-        if (finishedCount == 0)
-        {
-            cout << "you lucked out... no waffle party tokens to lose next time.....WATCH OUT!" << endl;
-        }
-        else
-        {
-            cout << "You have lost one waffle party token. " << endl;
-            cout << "Current: " << finishedCount << " tokens" << endl;
-            cout << "New: " << finishedCount - 1 << " tokens" << endl;
-            cout << "Don't mess up next time." << endl;
-
-            finishedCount -= 1;
-            saveFinishedCount(finishedCount);
-        }
-        return 1;
-    }
-
-    return 0;
-}
