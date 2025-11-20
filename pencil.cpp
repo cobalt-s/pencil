@@ -67,7 +67,10 @@ vector<Task> loadTasks()
         }
 
         Task t;
-        t.text = line;
+        auto pos = line.find('|');
+        if (pos == string::npos){ continue; }
+        t.text = line.substr(0, pos);
+        t.due_date = line.substr(pos + 1);
         tasks.push_back(t);
     }
 
@@ -84,6 +87,7 @@ void saveTasks(const vector<Task> &tasks)
     if (!out)
     {
         cerr << "Error: cannot write to todo file." << endl;
+        return;
     }
 
     for (const auto &t : tasks)
